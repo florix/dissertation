@@ -1,0 +1,176 @@
+# modify the response schemas in almost paths because they are not completed
+
+swagger: "2.0"
+
+
+info: 
+  title: "3pi APIs"
+  description: |
+    These are the RESTful APIs that can be used by the users to control the 3pi robot, to obtain informtaion from its sensors or to change its speed or direction.
+  version: "1.0.0"
+  
+
+host: 1.1.3.127 # Here i have to paste the real IP address
+
+
+schemes: 
+  - http
+  - https
+
+
+produces:
+  - application/json
+ 
+  
+paths:
+
+
+  /obtainstatus:
+    get:
+      description: Used to obtain the robot status
+      summary: |
+        Thanks to this API the user can send 
+        an HTTP request to obtain the status
+        (i.e. battery level)
+      responses:
+        200:
+          description: |
+            The response from the robot, it contains
+            robot information about itself.
+          schema: # this is just an example, should be  soon updated
+            title: "Response"
+            type: object
+            proprierties:
+              current_IP:
+                type: string
+              battery_level:
+                type: string
+        500:
+          description: |
+            For some reasons it was impossibile to 
+            contact the robot
+        default:
+          description: Unexpected error
+          schema:
+            title: "Error"
+            type: string
+  
+  
+  /obtainmesurement:
+    get:
+      description: |
+        This request is used to obtain eviromental mesurements about a specific place.
+      summary: |
+        Thaks to this API, it is possibile to send the place where the robot has to perform the mesurements, how long have to wait if it faces some obstacles.
+      parameters:
+        - name: path
+          description: This is the path that the robot has to follow, it is an integer
+          type: integer
+          in: query
+          required: true
+        - name: timeout
+          description: How many seconds have to wait if it faces obstacles, it is an integer
+          type: integer
+          in: query
+          required: true
+      responses:
+        200:
+          description: The response from the robot, it
+            is a simple ACK.
+          schema:
+            title: Response
+            type: string
+        500:
+          description: An error occour an it was impossible to send the command
+          schema:
+            title: Response Error
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            title: "Error"
+            type: string
+            
+  
+  /abort:
+    get:
+      description: Used to abort a specific task
+      summary: It is used to abort a specific tastk. When the robot recieves this command returns to the closest rest point
+      responses:
+        200:
+          description: It is a simple ACK
+          schema:
+            title: Abort Response
+            type: string
+        500:
+          description: An error occour an it was impossibile to send the command
+          schema:
+            title: Error Response Abort
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            title: "Error"
+            type: string
+
+
+  /update:
+    get:
+      description: Used when the user is waiting for updates from the robot.
+      summary: The user is able to know the status of the task.
+      responses:
+        200:
+          description: |
+            The robot response, the fields                         related to the mesurements could be set to             NULL if the taks has not been completed.
+          schema:
+            title: Update Response
+            type: object
+            proprierties:
+              current state:
+                type: string
+              temperature:
+                type: string
+        500:
+          description: An error occour an it was impossibile to send the command
+          schema:
+            title: Error Update Response
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            titile: "Error"
+            type: string
+
+            
+ 
+  /viewcontrolmode:
+    get: 
+      description: The user is able to control direclty the robot
+      summary: Now the user can control the robot, sending specific command as query.
+      responses:
+        200:
+          description: The robot sent back an ACK
+          schema: 
+            title: ACK mode
+            type: string
+        500:
+          description: An error occour an it was impossibile to send the command
+          schema:
+            title: Error Control Mode
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            titile: "Error"
+            type: string
+            
+      
+#maybe, because of future improvments, this command should also produce as mime type something like video streaming            
+        
+      
+          
+          
+    
+        
+      
+
