@@ -1,4 +1,5 @@
-# modify the response schemas in almost paths because they are not completed
+# modify the response schemas in almost paths because they are not completed. 
+# add the dot at the end of each sentences
 
 swagger: "2.0"
 
@@ -64,13 +65,21 @@ paths:
         Thaks to this API, it is possibile to send the place where the robot has to perform the mesurements, how long have to wait if it faces some obstacles.
       parameters:
         - name: path
-          description: This is the path that the robot has to follow, it is an integer
+          description: This is the path that the robot has to follow, it is an integer (1 to 2)
           type: integer
+          minimum: 1
+          maximum: 2
+          exclusiveMaximum: false
+          exclusiveMinimum: false
           in: query
           required: true
         - name: timeout
-          description: How many seconds have to wait if it faces obstacles, it is an integer
+          description: How many seconds have to wait if it faces obstacles, it is an integer (1 to 5 seconds)
           type: integer
+          minimum: 1
+          maximum: 5
+          exclusiveMaximum: false
+          exclusiveMinimum: false
           in: query
           required: true
       responses:
@@ -165,7 +174,38 @@ paths:
             type: string
             
       
-#maybe, because of future improvments, this command should also produce as mime type something like video streaming            
+#maybe, because of future improvments, this command should also produce as mime type something like video streaming
+  /changedirection:
+    get:
+      description: Change the direction of the robot
+      summary: The user is able to specify the direction thanks to the parameters in the query
+      parameters:
+        - name: direction
+          description: The robot direction (left = 1, right = 2, stop = 3, inversion = 4, forward = 5)
+          minimum : 1
+          maximum : 5
+          exclusiveMinimum: false
+          exclusiveMaximum: false
+          type: integer
+          in: query
+          required: true
+      responses:
+        200:
+          description: It is an ACK
+          schema: 
+            title: Direction ACK
+            type: string
+        500:
+          description: An error occour an it was impossibile to send the command
+          schema:
+            title: Error Control Mode
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            titile: "Error"
+            type: string
+          
         
       
           
