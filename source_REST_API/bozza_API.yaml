@@ -50,11 +50,22 @@ paths:
           description: |
             For some reasons it was impossibile to 
             contact the robot
+            schema:
+              title: "Error Message Status"
+              type: object
+                proprierties:
+                  error message:
+                    type: string
+
         default:
           description: Unexpected error
           schema:
             title: "Error"
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
+
   
   
   /obtainmesurement:
@@ -88,17 +99,27 @@ paths:
             is a simple ACK.
           schema:
             title: Response
-            type: string
+            type: object
+            proprierties:
+              response ACK:
+                type: string
         500:
           description: An error occour an it was impossible to send the command
           schema:
             title: Response Error
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
         default:
           description: Unexpected Error
           schema:
             title: "Error"
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
+
             
   
   /abort:
@@ -110,17 +131,26 @@ paths:
           description: It is a simple ACK
           schema:
             title: Abort Response
-            type: string
+            type: object
+            proprierties:
+              response message:
+                type: string
         500:
           description: An error occour an it was impossibile to send the command
           schema:
             title: Error Response Abort
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
         default:
           description: Unexpected Error
           schema:
             title: "Error"
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
 
 
   /update:
@@ -130,7 +160,7 @@ paths:
       responses:
         200:
           description: |
-            The robot response, the fields                         related to the mesurements could be set to             NULL if the taks has not been completed.
+            The robot response, the fields  related to the mesurements could be set to  NULL if the taks has not been completed.
           schema:
             title: Update Response
             type: object
@@ -143,14 +173,19 @@ paths:
           description: An error occour an it was impossibile to send the command
           schema:
             title: Error Update Response
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
         default:
           description: Unexpected Error
           schema:
             titile: "Error"
-            type: string
-
-            
+            type: object
+            proprierties:
+              error message:
+                type: string
+  
  
   /viewcontrolmode:
     get: 
@@ -161,17 +196,26 @@ paths:
           description: The robot sent back an ACK
           schema: 
             title: ACK mode
-            type: string
+            type: object
+            proprierties:
+              response message:
+                type: string
         500:
           description: An error occour an it was impossibile to send the command
           schema:
             title: Error Control Mode
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
         default:
           description: Unexpected Error
           schema:
             titile: "Error"
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
             
       
 
@@ -194,17 +238,26 @@ paths:
           description: It is an ACK
           schema: 
             title: Direction ACK
-            type: string
+            type: object
+            proprierties:
+              direction response:
+                type: string
         500:
           description: An error occour an it was impossibile to send the command
           schema:
             title: Error Control Mode
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
         default:
           description: Unexpected Error
           schema:
             titile: "Error"
-            type: string
+            type: object
+            proprierties:
+              error message:
+                type: string
    
           
   /changespeed:  
