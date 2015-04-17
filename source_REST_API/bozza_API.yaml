@@ -174,7 +174,7 @@ paths:
             type: string
             
       
-#maybe, because of future improvments, this command should also produce as mime type something like video streaming
+
   /changedirection:
     get:
       description: Change the direction of the robot
@@ -205,8 +205,50 @@ paths:
           schema:
             titile: "Error"
             type: string
+   
           
-        
+  /changespeed:  
+    get:
+      description: Change the robot speed
+      summary: The user is able to increase or decrease the robot speed in the view control mode. The available speed are 1 , 2 ,3, 4.
+        Type 0 to stop the robot.
+      parameters:
+        - name: speed
+          description: The robot speed
+          minimum : 0 
+          maximum : 4
+          exclusiveMinimum: false
+          exclusiveMaximum: false
+          type: integer
+          in: query
+          required: true
+      responses:
+        200:
+          description: It is an ACK
+          schema:
+            title: Speed ACK
+            type: object
+            properties:
+              resonse message:
+                type: string
+        500:
+          description: An error occours and it was impossible to send the command.
+          schema:
+            title: Error Speed ACK
+            type: object
+            properties:
+              resonse message:
+                type: string
+        default:
+          description: Unexpected Error
+          schema:
+            titile: "Error"
+            type: object
+            properties:
+              error message:
+                type: string
+                
+            
       
           
           
