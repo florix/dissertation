@@ -1,1 +1,1 @@
-in this folder there are the source files of rest API
+in this folder there are the source files of rest APIs
