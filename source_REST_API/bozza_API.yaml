@@ -111,6 +111,14 @@ paths:
             proprierties:
               error message:
                 type: string
+        400:
+          description: Bad request performed(possible errors in queries).
+          schema:
+            title: Response Bad Request
+            type: object
+            properties:
+              error message:
+                type: string
         default:
           description: Unexpected Error.
           schema:
@@ -250,6 +258,14 @@ paths:
             proprierties:
               error message:
                 type: string
+        400:
+          description: Bad request performed(possible errors in queries).
+          schema:
+            title: Response Bad Request
+            type: object
+            properties:
+              error message:
+                type: string
         default:
           description: Unexpected Error.
           schema:
@@ -291,6 +307,14 @@ paths:
             type: object
             properties:
               resonse message:
+                type: string
+        400:
+          description: Bad request performed(possible errors in queries).
+          schema:
+            title: Response Bad Request
+            type: object
+            properties:
+              error message:
                 type: string
         default:
           description: Unexpected Error.
