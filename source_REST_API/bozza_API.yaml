@@ -222,7 +222,7 @@ paths:
   /changedirection:
     get:
       description: Change the robot direction.
-      summary: The user is able to specify the direction setting parameters in the query.
+      summary: The user is able to specify the direction setting parameters in the query. This command is available only in visual control mode.
       parameters:
         - name: direction
           description: The robot direction (left = 1, right = 2, stop = 3, inversion = 4, forward = 5).
@@ -264,7 +264,7 @@ paths:
     get:
       description: Change the robot speed.
       summary: The user is able to increase or decrease the robot speed in the visual control mode. The available speed are 1 , 2 ,3, 4.
-        Type 0 to stop the robot.
+        Type 0 to stop the robot. This command is available only in visual control mode.
       parameters:
         - name: speed
           description: The robot speed
