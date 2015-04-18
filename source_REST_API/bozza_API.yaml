@@ -7,7 +7,7 @@ swagger: "2.0"
 info: 
   title: "3pi APIs"
   description: |
-    These are the RESTful APIs that can be used by the users to control the 3pi robot, to obtain informtaion from its sensors or to change its speed or direction.
+    These are the RESTful APIs that can be used by users to send commands to the 3pi robot, in order to both obtain information from its sensors and to control it.
   version: "1.0.0"
   
 
@@ -28,17 +28,17 @@ paths:
 
   /obtainstatus:
     get:
-      description: Used to obtain the robot status
+      description: Used to obtain the robot status.
       summary: |
-        Thanks to this API the user can send 
-        an HTTP request to obtain the status
-        (i.e. battery level)
+        The user can send 
+        a request to obtain the robot status
+        (i.e. battery level).
       responses:
         200:
           description: |
             The response from the robot, it contains
-            robot information about itself.
-          schema: # this is just an example, should be  soon updated
+            robot information.
+          schema: # this is just an example, should be soon updated
             title: "Response"
             type: object
             proprierties:
@@ -48,14 +48,14 @@ paths:
                 type: string
         500:
           description: |
-            For some reasons it was impossibile to 
-            contact the robot
-            schema:
-              title: "Error Message Status"
-              type: object
-                proprierties:
-                  error message:
-                    type: string
+            For some reasons, it was impossible to 
+            contact the robot.
+          schema:
+            title: "Error Message Status"
+            type: object
+            proprierties:
+                error message:
+                  type: string
 
         default:
           description: Unexpected error
@@ -71,12 +71,12 @@ paths:
   /obtainmesurement:
     get:
       description: |
-        This request is used to obtain eviromental mesurements about a specific place.
+        This request is used to obtain enviromental mesurements in a specific place.
       summary: |
-        Thaks to this API, it is possibile to send the place where the robot has to perform the mesurements, how long have to wait if it faces some obstacles.
+        Using  this API, it is possibile to send the place where the robot has to perform the mesurements and how long it has to wait if it faces some obstacles.
       parameters:
         - name: path
-          description: This is the path that the robot has to follow, it is an integer (1 to 2)
+          description: This is the path that the robot has to follow, it is an integer (possible values are 1 or 2).
           type: integer
           minimum: 1
           maximum: 2
@@ -85,7 +85,7 @@ paths:
           in: query
           required: true
         - name: timeout
-          description: How many seconds have to wait if it faces obstacles, it is an integer (1 to 5 seconds)
+          description: How many seconds it has to wait if it faces obstacles, it is an integer (possibile values are from 1 to 5 seconds).
           type: integer
           minimum: 1
           maximum: 5
@@ -96,7 +96,7 @@ paths:
       responses:
         200:
           description: The response from the robot, it
-            is a simple ACK.
+            is an ACK.
           schema:
             title: Response
             type: object
@@ -104,7 +104,7 @@ paths:
               response ACK:
                 type: string
         500:
-          description: An error occour an it was impossible to send the command
+          description: An error occour an it was impossible to send the command.
           schema:
             title: Response Error
             type: object
@@ -112,7 +112,7 @@ paths:
               error message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
             title: "Error"
             type: object
@@ -124,11 +124,11 @@ paths:
   
   /abort:
     get:
-      description: Used to abort a specific task
-      summary: It is used to abort a specific tastk. When the robot recieves this command returns to the closest rest point
+      description: Used to abort a specific task.
+      summary: It is used to abort a specific tastk. When the robot recieves this command, it returns to the closest rest point.
       responses:
         200:
-          description: It is a simple ACK
+          description: It is an ACK.
           schema:
             title: Abort Response
             type: object
@@ -136,7 +136,7 @@ paths:
               response message:
                 type: string
         500:
-          description: An error occour an it was impossibile to send the command
+          description: An error occour an it was impossibile to send the command.
           schema:
             title: Error Response Abort
             type: object
@@ -144,7 +144,7 @@ paths:
               error message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
             title: "Error"
             type: object
@@ -156,11 +156,11 @@ paths:
   /update:
     get:
       description: Used when the user is waiting for updates from the robot.
-      summary: The user is able to know the status of the task.
+      summary: It is used when the user is wondering about updates from the robot.
       responses:
         200:
           description: |
-            The robot response, the fields  related to the mesurements could be set to  NULL if the taks has not been completed.
+            The robot response, the fields  related to the mesurements could be set to  NULL if the task has not been completed.
           schema:
             title: Update Response
             type: object
@@ -170,7 +170,7 @@ paths:
               temperature:
                 type: string
         500:
-          description: An error occour an it was impossibile to send the command
+          description: An error occour an it was impossibile to send the command.
           schema:
             title: Error Update Response
             type: object
@@ -178,7 +178,7 @@ paths:
               error message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
             titile: "Error"
             type: object
@@ -187,13 +187,13 @@ paths:
                 type: string
   
  
-  /viewcontrolmode:
+  /visualcontrolmode:
     get: 
-      description: The user is able to control direclty the robot
-      summary: Now the user can control the robot, sending specific command as query.
+      description: In this API, the user just tells to the robot to switch to the visual control mode.
+      summary:  The user can directly control the robot, sending it specific commands as query.
       responses:
         200:
-          description: The robot sent back an ACK
+          description: The robot sends back an ACK.
           schema: 
             title: ACK mode
             type: object
@@ -201,7 +201,7 @@ paths:
               response message:
                 type: string
         500:
-          description: An error occour an it was impossibile to send the command
+          description: An error occour an it was impossibile to send the command.
           schema:
             title: Error Control Mode
             type: object
@@ -209,7 +209,7 @@ paths:
               error message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
             titile: "Error"
             type: object
@@ -221,11 +221,11 @@ paths:
 
   /changedirection:
     get:
-      description: Change the direction of the robot
-      summary: The user is able to specify the direction thanks to the parameters in the query
+      description: Change the robot direction.
+      summary: The user is able to specify the direction setting parameters in the query.
       parameters:
         - name: direction
-          description: The robot direction (left = 1, right = 2, stop = 3, inversion = 4, forward = 5)
+          description: The robot direction (left = 1, right = 2, stop = 3, inversion = 4, forward = 5).
           minimum : 1
           maximum : 5
           exclusiveMinimum: false
@@ -235,7 +235,7 @@ paths:
           required: true
       responses:
         200:
-          description: It is an ACK
+          description: It is an ACK.
           schema: 
             title: Direction ACK
             type: object
@@ -243,7 +243,7 @@ paths:
               direction response:
                 type: string
         500:
-          description: An error occour an it was impossibile to send the command
+          description: An error occour an it was impossibile to send the command.
           schema:
             title: Error Control Mode
             type: object
@@ -251,7 +251,7 @@ paths:
               error message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
             titile: "Error"
             type: object
@@ -262,8 +262,8 @@ paths:
           
   /changespeed:  
     get:
-      description: Change the robot speed
-      summary: The user is able to increase or decrease the robot speed in the view control mode. The available speed are 1 , 2 ,3, 4.
+      description: Change the robot speed.
+      summary: The user is able to increase or decrease the robot speed in the visual control mode. The available speed are 1 , 2 ,3, 4.
         Type 0 to stop the robot.
       parameters:
         - name: speed
@@ -277,7 +277,7 @@ paths:
           required: true
       responses:
         200:
-          description: It is an ACK
+          description: It is an ACK.
           schema:
             title: Speed ACK
             type: object
@@ -293,9 +293,9 @@ paths:
               resonse message:
                 type: string
         default:
-          description: Unexpected Error
+          description: Unexpected Error.
           schema:
-            titile: "Error"
+            titile: Error
             type: object
             properties:
               error message:
