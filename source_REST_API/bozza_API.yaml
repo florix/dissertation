@@ -295,7 +295,7 @@ paths:
         default:
           description: Unexpected Error.
           schema:
-            titile: Error
+            titile: "Error"
             type: object
             properties:
               error message:
