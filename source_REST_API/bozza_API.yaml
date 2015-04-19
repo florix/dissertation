@@ -1,5 +1,4 @@
-# modify the response schemas in almost paths because they are not completed. 
-# add the dot at the end of each sentences
+
 
 swagger: "2.0"
 
@@ -38,7 +37,7 @@ paths:
           description: |
             The response from the robot, it contains
             robot information.
-          schema: # this is just an example, should be soon updated
+          schema: 
             title: "Response"
             type: object
             proprierties:
