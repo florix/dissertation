@@ -12,7 +12,10 @@ and it sends as HTTP response a html page.
 // Enter a MAC address and IP address for your controller below.
 byte mac[] = { 
   0x90, 0xA2, 0xDA, 0x00, 0xFA, 0x0F };
-//IPAddress ip(192,168,1, 177);
+  
+String buffer;
+
+unsigned short int    NumberOfSpace = 0;
 
 // Initialize the Ethernet server library
 // with the IP address and port you want to use 
@@ -39,20 +42,52 @@ void loop() {
   // listen for incoming clients
   
   EthernetClient client = server.available();
+  
   if (client) {
+    
     Serial.println("new client");
-    // an http request ends with a blank line
-    boolean currentLineIsBlank = true;
+    
+    /* acquisition HTTP request */
     while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();
-        Serial.write(c);
-        // if you've gotten to the end of the line (received a newline
-        // character) and the line is blank, the http request has ended,
-        // so you can send a reply
-        if (c == '\n' && currentLineIsBlank) {
-          // send a standard http response header
-          client.println("HTTP/1.1 200 OK");
+      
+      while (client.available()) {
+        
+        String c = String(client.read());
+        if (c.compareTo(" ") == 0 && NumberOfSpace == 1) {
+          break;
+        }
+        else
+          buffer = buffer + c;
+       
+      }
+      if (NumberOfSpace == 1) break;
+    }
+    Serial.println(buffer);
+    /*decode the HTTP request*/
+    
+    if ( buffer.substring(0) == "GET") {
+      if (buffer.substring(5) == "/prova")
+        int a = 1;
+        /*HTTP response for /prova*/
+      else if ( buffer.substring(5) == "/prova1")
+        int a = 2;
+        /* HTTP response for /prova1 */
+    } else 
+      int a = 1;
+    /* HTTP response Bad Request */ 
+    
+    // give the web browser time to receive the data
+    delay(1);
+    // close the connection:
+    client.stop();
+    Serial.println("client disonnected");
+  }
+}
+
+
+void HTTP_response_GET(void) 
+{
+    client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connnection: close");
           client.println();
@@ -60,28 +95,13 @@ void loop() {
           client.println("<html>");
                     // add a meta refresh tag, so the browser pulls again every 5 seconds:
           client.println("<meta http-equiv=\"refresh\" content=\"5\">");
-          // output the value of each analog input pin
+          
           client.println("<body>");
-          client.println("Ciao Ciao!");
+          client.println("Ciao");
           client.println("</body>");
+          
           client.println("</html>");
-          break;
-        }
-        if (c == '\n') {
-          // you're starting a new line
-          currentLineIsBlank = true;
-        } 
-        else if (c != '\r') {
-          // you've gotten a character on the current line
-          currentLineIsBlank = false;
-        }
-      }
-    }
-    // give the web browser time to receive the data
-    delay(1);
-    // close the connection:
-    client.stop();
-    Serial.println("client disonnected");
-  }
+   
+
 }
 
