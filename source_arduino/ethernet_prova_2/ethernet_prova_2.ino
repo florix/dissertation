@@ -3,10 +3,11 @@
 /* Date: 27/04/2015                                        */
 /* Arduino Ethernet Shield, example 2                      */
 /* DHCP server, is able to decode 2 kinds of HTTP requests */
+/* the HTTP response message are application/json          */
 /***********************************************************/
 
 // Note: stdint.h has been already included because it is used by Arduino.h
-
+// Furthermore pins 10,11,12,13 are used by ethernet shield.
 #include <SPI.h>
 #include <Ethernet.h>
 #include <string.h>
@@ -106,7 +107,7 @@ void loop()
 
 /*******************************************/
 /*	Name: HTTP_response_GET1           */
-/*	Params: Void                       */
+/*	Params: A client object            */
 /*	Return: Void                       */
 /*	Description: This is the routine   */
 /*	called whenever the path is /prova */
@@ -114,22 +115,18 @@ void loop()
 void HTTP_response_GET1(EthernetClient  & client) 
 {
     client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
+    client.println("Content-Type: application/json");
     client.println("Connnection: close");
     client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<body>");
-    client.println("Ciao");
-    client.println("</body>"); 
-    client.println("</html>");
+    client.println("{ \"temperature\": 14.44, \"status\": 1 }");
+    
 }
 
 
 
 /********************************************/
 /*	Name: HTTP_response_GET2            */
-/*	Params: Void                        */
+/*	Params: A client object             */
 /*	Return: Void                        */
 /*	Description: This is the routine    */
 /*	called whenever the path is /prova1 */
@@ -137,22 +134,17 @@ void HTTP_response_GET1(EthernetClient  & client)
 void HTTP_response_GET2(EthernetClient  & client) 
 {
     client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
+    client.println("Content-Type: application/json");
     client.println("Connnection: close");
     client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<body>");
-    client.println("Ciao Ciao");
-    client.println("</body>");
-    client.println("</html>");
+    client.println("{ \"pressure\": 14.44, \"status\": 1 }");    
 }
 
 
 
 /********************************************************/
 /*	Name: HTTP_BAD_REQUEST                          */
-/*	Params: Void                                    */
+/*	Params: A client object                         */
 /*	Return: Void                                    */
 /*	Description: This is the routine                */
 /*	called whenever the path doesn't match anything */
@@ -160,13 +152,8 @@ void HTTP_response_GET2(EthernetClient  & client)
 void HTTP_BAD_REQUEST(EthernetClient  & client) 
 {
     client.println("HTTP/1.1 400 BAD REQUEST");
-          client.println("Content-Type: text/html");
-          client.println("Connnection: close");
-          client.println();
-          client.println("<!DOCTYPE HTML>");
-          client.println("<html>");
-          client.println("<body>");
-          client.println("Bad Request!");
-          client.println("</body>");
-          client.println("</html>");
+    client.println("Content-Type: application/json");
+    client.println("Connnection: close");
+    client.println();
+    client.println("{ \"error message\": \"Bad Request!\"}");        
 }
