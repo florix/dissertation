@@ -11,13 +11,14 @@
 /* shield.                                                 */
 /* The bluetooth message are:                              */
 /*        * operation parameter *                          */
-/*        * status value *                                 */
+/*        * latest_status value *                          */
 /***********************************************************/
 
 #include <SPI.h>
 #include <Ethernet.h>
 #include <string.h>
 #include <SoftwareSerial.h>
+
 
 
 
@@ -30,12 +31,12 @@ EthernetServer    server(80);		// server initialization
 
 
 /* BLUETOOTH GLOBAL VARIABLES */
-uint8_t    blueTX = 2;
-uint8_t    blueRX= 3;
+const uint8_t    blueTX = 2;
+const uint8_t    blueRX= 3;
 volatile uint8_t    NumberOfAsterisk = 0;    // count the number of asterisk
 volatile char     c;                  // it's used to read the serial data
 volatile char    buffer1[50];            // the buffer used inside the isr
-volatile uint8_t    ex = 0;             // exit flag, when it's set it means that the strig has been completed
+volatile boolean    ex = false;             // exit flag, when it's set it means that the strig has been completed
 volatile uint8_t    index = 0;             // string index
 char    buffer_debug[50];                      // buffer used to decode the string(because i want to print), it makes sense only in debug mode 
 SoftwareSerial     blue(blueTX, blueRX); // RX, TX their'are inverted as usual in USART
@@ -45,14 +46,14 @@ SoftwareSerial     blue(blueTX, blueRX); // RX, TX their'are inverted as usual i
 class S2
 {
 public:
-  uint8_t    status;
+  uint8_t    latest_latest_status;
   uint8_t    value;
   
   S2(void);      // constructor
-  uint8_t get_status(void) {return status;};
+  uint8_t get_latest_status(void) {return latest_latest_status;};
   uint8_t get_value(void) {return value;};
-  void set_status(uint8_t a) {status = a;};
-  void set_value(uint8_t a) {value = a;};
+  void set_latest_status(uint8_t a) {latest_latest_status = a;};
+  void set_value(uint8_t b) {value = b;};
   void send_message(uint8_t operation, uint8_t parameter);
   void decode_message(void); 
 };
@@ -60,7 +61,7 @@ public:
 
  S2::S2()
 {
-  status = 0;
+  latest_latest_status = 0;
   value = 0;
 }
 
@@ -79,10 +80,10 @@ void S2::decode_message(void)
 {
   buffer1[index] = 0;
   /* Decode and set object params */
-  status  = buffer1[2] - 48;
+  latest_latest_status  = buffer1[2] - 48;
   value = buffer1[4] - 48;
   index = 0;
-  ex = 0;
+  ex = false;
   
 }
 
@@ -130,8 +131,8 @@ void loop()
 {
     /* if the flag is set, it means that the string is completed,
        and in this case that it's arrived an unexpected message
-       from the smartphone(status update) */
-    if(ex == 1) {
+       from the smartphone(latest_status update) */
+    if(ex) {
       smartphone.decode_message();
       
       /*
@@ -140,7 +141,7 @@ void loop()
       for(uint8_t j = 0; j <= index; j++)
         buffer_debug[j] = buffer1[j];
       index = 0;
-      ex = 0;      //  RESET
+      ex = false;      //  RESET
       Serial.println(buffer_debug);
       */
     }
@@ -184,7 +185,7 @@ void loop()
          in this case the longest could be GET /prova1 */
       if (strncmp(buffer, "GET /prova1", 11) == 0) {
         /* in this case the procedure is: send operation,
-           wait for the ack(smartphone is changin its status)
+           wait for the ack(smartphone is changin its latest_status)
            and then reply to the client */
         smartphone.send_message(1, 2);
         while(ex!=1) {};      // busy waiting
@@ -192,7 +193,7 @@ void loop()
         HTTP_response_GET2(client);
       } else if (strncmp(buffer, "GET /prova", 10) == 0) {
         smartphone.send_message(2, 1);
-        while(ex!=1) {};      // busy waiting
+        while(!ex) {};      // busy waiting
         smartphone.decode_message();
         HTTP_response_GET1(client);
       } else {
@@ -229,7 +230,7 @@ void isr_blue(void)
       }      
       else if (c == '*' && NumberOfAsterisk > 0) {
         NumberOfAsterisk = 0;
-        ex = 1;      // the string is completed, set exit flag  
+        ex = true;      // the string is completed, set exit flag  
       }
       
       			
@@ -256,8 +257,8 @@ void HTTP_response_GET1(EthernetClient  & client)
     client.println();
     client.print("{ \"temperature\": ");
     client.print(smartphone.get_value());
-    client.print(", \"status\": ");
-    client.print(smartphone.get_status());
+    client.print(", \"latest_status\": ");
+    client.print(smartphone.get_latest_status());
     client.println(" }");    
 }
 
@@ -278,8 +279,8 @@ void HTTP_response_GET2(EthernetClient  & client)
     client.println();
     client.print("{ \"pressure\": ");
     client.print(smartphone.get_value());
-    client.print(", \"status\": ");
-    client.print(smartphone.get_status());
+    client.print(", \"latest_status\": ");
+    client.print(smartphone.get_latest_status());
     client.println(" }");    
 }
 
