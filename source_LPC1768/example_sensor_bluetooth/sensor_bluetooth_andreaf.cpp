@@ -2,17 +2,19 @@
 /* sensor_bluetooth_andreaf.cpp                                               */
 /* In this example the MCU reads values from sensor and it sends these values */
 /* to the user via bluetooth                                                  */
-/*                                                                            */
-/*  Created on: May 9, 2015                                                   */
+/* UPDATED VERSION: lightweight float to string conversion                    */
+/*  Created on: May 11, 2015                                                  */
 /*      Author: Andrea Floridia                                               */
 /******************************************************************************/
 
 #include "mbed.h"
-#include "string"
-#include "iostream"
-#include "sstream"
+#include <cstdio>			// this replace the past includes
+#include <cstring>
+//#include "string"			no longer needed these 3 include
+//#include "iostream"
+//#include "sstream"
 
-using namespace std;
+//using namespace std;		no longer needed
 
 // global variables
 AnalogIn    sensor(p15);
@@ -47,8 +49,8 @@ int main()
 	uint16_t       sensor_value;		// value read from the analog in
 	float          temperature;			// to store the value after the conversion from mV
 	float          voltage;				// conversion from integer to mV
-	stringstream ss (stringstream::in | stringstream::out);		// needed for the conversion
-	string		   data;				// to store the result of the conversion
+	//stringstream ss (stringstream::in | stringstream::out);	no longer needed	// needed for the conversion
+	char		   data[50];				// to store the result of the conversion
 	float          sample = 0;			// it's the sample to send via bluetooth
 	uint16_t       i = 0;				// counter
 
@@ -94,10 +96,14 @@ int main()
     	sample = sample / 1000.0;
 
     	// conversion float to string, then send via bluetooth
+    	/* old version
     	ss << sample;
     	data = ss.str();
+		*/
 
-    	for (i=0; i<data.length();i++) {
+    	sprintf(data, "%f", sample);
+
+    	for (i=0; i<strlen(data);i++) {
     		rn42.putc(data[i]);
     	}
 
