@@ -3,77 +3,92 @@
 /* In this example the MCU reads values from sensor and it sends these values */
 /* to the user via bluetooth                                                  */
 /* UPDATED VERSION: lightweight float to string conversion                    */
-/*  Created on: May 11, 2015                                                  */
+/* PIN CONFIGURATION:                                                         */
+/* p9 = RX RN-42 pin                                                          */
+/* p10 = TX RN-42 pin                                                         */
+/* p15 = central pin TMP36                                                    */
+/*  Created on: May 16, 2015                                                  */
 /*      Author: Andrea Floridia                                               */
 /******************************************************************************/
 
 #include "mbed.h"
-#include <cstdio>			// this replace the past includes
+#include <cstdio>
 #include <cstring>
-//#include "string"			no longer needed these 3 include
-//#include "iostream"
-//#include "sstream"
 
-//using namespace std;		no longer needed
 
 // global variables
-AnalogIn    sensor(p15);
 Serial   rn42(p9,p10);          // tx, rx
-Serial   pc(USBTX, USBRX);      // tx, rx
-uint8_t 	begin;		// is set whenever go is received
+uint8_t 	begin;				// is set whenever go is received
 
 
 /********************************************/
-/* Name: callback                           */
+/* Name: isr_bluetooth                      */
 /* Params: void                             */
 /* Return: void                             */
 /* This is the interrupt service routine    */
 /* called whenever a data arrives form      */
 /* the bluetooth                            */
 /********************************************/
-void callback(void)
+void isr_bluetooth(void)
 {
     if (rn42.readable()) {
     // get the new byte:
-    char data = (char)rn42.getc();
+    	char data = (char)rn42.getc();
 
-    if (data == 'g')
-    	begin = 1;
+    	if (data == 'g')
+    		begin = 1;
   }
  }
 
 
+/**************************************************/
+/* Name: bluetooth_setup                          */
+/* Params: void                                   */
+/* Return: void                                   */
+/* This is the bluetooth setup, it's called       */
+/* just once in the program. It enters in         */
+/* command mode and it changes the baud rate from */
+/* 115200 to 9600, because 115200 it's too fast   */
+/* to guarantee data integrity                    */
+/**************************************************/
+void bluetooth_setup(void)
+{
+	// 115200 it's too fast for data integrity
+	rn42.baud(115200);
+	rn42.putc('$');
+	rn42.putc('$');
+	rn42.putc('$');
+	wait(0.1);
+	rn42.putc('U');
+	rn42.putc(',');
+	rn42.putc('9');
+	rn42.putc('6');
+	rn42.putc('0');
+	rn42.putc('0');
+	rn42.putc(',');
+	rn42.putc('N');
+	rn42.putc('\n');
+	rn42.baud(9600);
+}
+
+
+
 int main()
 {
-
+	AnalogIn       temperature_sensor(p15);
 	uint16_t       sensor_value;		// value read from the analog in
 	float          temperature;			// to store the value after the conversion from mV
 	float          voltage;				// conversion from integer to mV
-	//stringstream ss (stringstream::in | stringstream::out);	no longer needed	// needed for the conversion
-	char		   data[50];				// to store the result of the conversion
+	char		   data[50];			// to store the result of the conversion
 	float          sample = 0;			// it's the sample to send via bluetooth
-	uint16_t       i = 0;				// counter
+	uint16_t       i = 0;				// index for
 
 	//setup
 	begin = 0;
-    rn42.attach(&callback);             // attach interrupt to serial port
+    rn42.attach(&isr_bluetooth);             // attach interrupt to serial port
 
-    // setup rn42, 115200 it's too fast for data integrity
-    rn42.baud(115200);
-    rn42.putc('$');
-    rn42.putc('$');
-    rn42.putc('$');
-    wait(0.1);
-    rn42.putc('U');
-    rn42.putc(',');
-    rn42.putc('9');
-    rn42.putc('6');
-    rn42.putc('0');
-    rn42.putc('0');
-    rn42.putc(',');
-    rn42.putc('N');
-    rn42.putc('\n');
-    rn42.baud(9600);
+    // setup rn42
+    bluetooth_setup();
 
 
     // main loop
@@ -84,22 +99,16 @@ int main()
     	// conversion
     	for (i = 0; i < 1000; i++) {
 
-    		sensor_value = sensor.read_u16();
+    		sensor_value = temperature_sensor.read_u16();
     		voltage = (sensor_value / 65536.0 ) * 3.3;
     		temperature = (voltage - .5) * 100;
 
     		sample += temperature;
-
-
     	}
 
     	sample = sample / 1000.0;
 
     	// conversion float to string, then send via bluetooth
-    	/* old version
-    	ss << sample;
-    	data = ss.str();
-		*/
 
     	sprintf(data, "%f", sample);
 
@@ -110,6 +119,8 @@ int main()
     	begin = 0;				// reset for the new command
 
     }
+
+    return 0;
 
 }
 
