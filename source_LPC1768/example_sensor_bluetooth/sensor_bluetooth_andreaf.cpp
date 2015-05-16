@@ -69,6 +69,8 @@ void bluetooth_setup(void)
 	rn42.putc('N');
 	rn42.putc('\n');
 	rn42.baud(9600);
+	/*da aggingeere il setup da slave vedi internet */
+
 }
 
 
@@ -112,9 +114,18 @@ int main()
 
     	sprintf(data, "%f", sample);
 
+    	rn42.putc('*');
+
+    	wait(0.1);
+
     	for (i=0; i<strlen(data);i++) {
     		rn42.putc(data[i]);
+    		wait(0.1);
     	}
+
+    	wait(0.1);
+
+    	rn42.putc('*');
 
     	begin = 0;				// reset for the new command
 
