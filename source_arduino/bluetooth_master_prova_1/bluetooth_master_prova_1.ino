@@ -1,11 +1,21 @@
 /*
- in this example arduino is the master, and sends to the PC whatever it 
- recieves from the bluetooth
+ in this example arduino is the master, and sends to the PC only the string 
+ *....*, note that it was necessary to introduce delays in lpc code!
+ because arduino has just a 8-bit CPU at 16 MHz, while LPC has 32-bit at
+ 96MHz, so 96/16 = 6 times faster!
  */
+
 #include <SoftwareSerial.h>  
 
 int bluetoothTx = 2;  // TX-O pin of bluetooth mate, Arduino D2
 int bluetoothRx = 3;  // RX-I pin of bluetooth mate, Arduino D3
+uint8_t   index = 0;
+char buffer1[50];
+boolean ex = false;
+char c;
+uint8_t NumberOfAsterisk = 0;
+boolean command = true;
+
 
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 
@@ -32,22 +42,64 @@ void setup()
   bluetooth.println("C,0006664FE329");
   delay(100);
   bluetooth.println("---"); 
+  
+  while(bluetooth.available()) {
 
+    bluetooth.read();
+
+  }
+
+  interrupts();
+  attachInterrupt(0, isr_blue, CHANGE); 
 
 }
 
+
+void isr_blue(void)
+{
+    if (bluetooth.available() && !ex) {
+     
+      c = (char)bluetooth.read();
+      
+      
+      if (c == '*' && NumberOfAsterisk == 0) {
+        NumberOfAsterisk ++;
+      }      
+      else if (c == '*' && NumberOfAsterisk > 0) {
+        NumberOfAsterisk = 0;
+        ex = true;      // the string is completed, set exit flag  
+      }
+      
+      
+            
+       buffer1[index] = c;
+       index++;
+    }   
+}
+
+
 void loop()
 {
-  if(bluetooth.available())  // If the bluetooth sent any characters
-  {
-    delay(10);
-    // Send any characters the bluetooth prints to the serial monitor
-    Serial.print((char)bluetooth.read());  
+
+  delay(100);
+
+
+  if(ex) {
+    noInterrupts();
+    buffer1[index] = 0;
+    Serial.println(buffer1);
+    index = 0;
+    ex = false;
+    command = true;
+    interrupts();
   }
-  if(Serial.available())  // If stuff was typed in the serial monitor
+
+  if(!ex && command)  // If stuff was typed in the serial monitor
   {
+    delay(5000);
     // Send any characters the Serial monitor prints to the bluetooth
-    bluetooth.print((char)Serial.read());
+    bluetooth.print('g');
+    command = false;
   }
   // and loop forever and ever!
 }
