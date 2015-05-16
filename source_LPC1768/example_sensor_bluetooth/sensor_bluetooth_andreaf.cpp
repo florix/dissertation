@@ -19,7 +19,7 @@
 // global variables
 Serial   rn42(p9,p10);          // tx, rx
 uint8_t 	begin;				// is set whenever go is received
-
+DigitalOut myled(LED1);			// it's used just to debug, to know when data received
 
 /********************************************/
 /* Name: isr_bluetooth                      */
@@ -86,7 +86,6 @@ void bluetooth_setup(void)
 	rn42.putc('-');
 	rn42.putc('\n');
 
-	/*da aggingeere il setup da slave vedi internet */
 
 }
 
@@ -105,7 +104,7 @@ int main()
 	//setup
 	begin = 0;
     rn42.attach(&isr_bluetooth);             // attach interrupt to serial port
-
+    myled = 0;								// turn off the led
     // setup rn42
     bluetooth_setup();
 
@@ -115,6 +114,7 @@ int main()
 
     	while(begin == 0){};		// waiting for the command
 
+    	myled = 1;					// turn on, something to trasmitt
     	// conversion
     	for (i = 0; i < 1000; i++) {
 
@@ -133,6 +133,9 @@ int main()
 
     	rn42.putc('*');
 
+    	/*NOTE that between two putc() there are always wait(0.1)
+    	 * because arduino has 8-bit CPU at 16MHz, while LPC has
+    	 * ARM cortex 3 at 69MHz!*/
     	wait(0.1);
 
     	for (i=0; i<strlen(data);i++) {
@@ -145,7 +148,7 @@ int main()
     	rn42.putc('*');
 
     	begin = 0;				// reset for the new command
-
+    	myled = 0;
     }
 
     return 0;
