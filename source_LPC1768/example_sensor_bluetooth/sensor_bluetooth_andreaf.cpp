@@ -69,6 +69,23 @@ void bluetooth_setup(void)
 	rn42.putc('N');
 	rn42.putc('\n');
 	rn42.baud(9600);
+
+	// setup slave
+	rn42.putc('$');
+	rn42.putc('$');
+	rn42.putc('$');
+	wait(0.1);
+	rn42.putc('S');
+	rn42.putc('M');
+	rn42.putc(',');
+	rn42.putc('0');
+	rn42.putc('\n');
+	wait(0.1);
+	rn42.putc('-');
+	rn42.putc('-');
+	rn42.putc('-');
+	rn42.putc('\n');
+
 	/*da aggingeere il setup da slave vedi internet */
 
 }
