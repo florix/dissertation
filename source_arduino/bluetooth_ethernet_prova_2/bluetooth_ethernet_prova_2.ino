@@ -22,6 +22,7 @@
 
 
 
+
 /* ETHERNET GLOBAL VARIABLES  */
 byte   mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xFA, 0x0F };    // Arduino MAC adress
 char    buffer[50];		// buffer used to store the first line of the request	
