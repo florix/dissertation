@@ -27,13 +27,13 @@ struct bitflag{
 	unsigned	flag_operation_code :2;
 } flags;
 
-Serial   		rn42(p9,p10);           // tx, rx
+Serial   		rn42(p9,p10);           // tx, rx (p9,p10)
 DigitalOut		myled(LED1);			// it's used just to debug, to know when data received
 char			buffer[50];				// used to store incoming data from bluetooth
 uint8_t			number_of_asterisk;		// it counts the number of asterisk in the buffer
 uint8_t			i;						// index used to access buffer
 uint8_t			state;					// m3pi state
-
+DigitalOut myled1(LED2);
 
 /********************************************/
 /* Name: isr_bluetooth                      */
@@ -54,6 +54,8 @@ void isr_bluetooth(void)
     		i++;
     		buffer[i] = 0;							//add the terminator at the end
     		flags.flag_bluetooth_message = 0b1;		// set the bit
+    		i = 0;									// reset for the next transmission
+    		number_of_asterisk = 0;
     	}
     	else if (data == '*' && number_of_asterisk == 0) {
     		buffer[i] = data;
@@ -229,40 +231,31 @@ void send_reply()
 }
 
 
-/***************************************************/
-/* Name: obtain_mesurement                         */
-/* Params: void                                    */
-/* Return: void                                    */
-/* This function it's called during excution stage */
-/* and perform the /obtainmesurement operation     */
-/***************************************************/
-void obtain_mesurement()
+/****************************************************/
+/* Name: obtain_measurement                         */
+/* Params: void                                     */
+/* Return: void                                     */
+/* This function it's called during execution stage */
+/* and perform the /obtainmeasurement operation     */
+/****************************************************/
+void obtain_measurement()
 {
 	AnalogIn       temperature_sensor(p15);
 	uint16_t       sensor_value;			// value read from the analog in
 	float          temperature;				// to store the value after the conversion from mV
 	float          voltage;					// conversion from integer to mV
 	char		   float_converted[50];				// to store the result of the conversion
-	float          sample = 0;				// it's the sample to send via bluetooth
-	uint16_t       index = 0;					// index for
+
 
 	myled = 1;					// turn on, something to transmit
 
-	// conversion
-	for (index = 0; index < 1000; i++) {
 
-		sensor_value = temperature_sensor.read_u16();
-		voltage = (sensor_value / 65536.0 ) * 3.3;
-		temperature = (voltage - .5) * 100;
+	sensor_value = temperature_sensor.read_u16();
+	voltage = (sensor_value / 65536.0 ) * 3.3;
+	temperature = (voltage - .5) * 100;
 
-		sample += temperature;
-	}
 
-	sample = sample / 1000.0;
-
-	// conversion float to string, then send via bluetooth
-
-	sprintf(float_converted, "%f", sample);
+	sprintf(float_converted, "%f", temperature);
 
 	rn42.putc('*');
 	wait(0.1);
@@ -323,23 +316,22 @@ int main()
 		switch(state) {
 
 			case IDLE:
-				if(flags.flag_bluetooth_message) {
-					state = DECODE;
-				}
+				while(!flags.flag_bluetooth_message){};
+				state = DECODE;
 				break;
 			case DECODE:
 				decode_message();
 				flags.flag_bluetooth_message = 0b0;		//clear the bit
-				i = 0;
-				number_of_asterisk = 0;					// reset for the next message
 				state = EXECUTION;
 				break;
 			case EXECUTION:
 				switch(flags.flag_operation_code) {
 
 					case 0b01:		//obtainmesurement
+
 						send_reply();
-						obtain_mesurement();
+						wait(0.1);		// to simulate that the measurement is not immediate
+						obtain_measurement();
 						state = IDLE;
 						flags.flag_operation_code = 0b00;		//nop
 						break;

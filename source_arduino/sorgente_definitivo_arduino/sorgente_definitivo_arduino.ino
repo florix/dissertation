@@ -194,13 +194,13 @@ void HTTP_response_obtainstatus(EthernetClient  & client)
 
 
 /******************************************************/
-/*  Name: HTTP_response_obtainmesurement              */
+/*  Name: HTTP_response_obtainmeasurement             */
 /*  Params: A client object                           */
 /*  Return: Void                                      */
 /*  Description: This is the routine                  */
 /*  called whenever the path is /obtainmesurement     */
 /******************************************************/
-void HTTP_response_obtainmesurement(EthernetClient  & client) 
+void HTTP_response_obtainmeasurement(EthernetClient  & client) 
 {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: application/json");
@@ -371,7 +371,7 @@ void loop()
       
       /* decode the HTTP request from the longest possible path
          in this case the longest could be GET /obtainmesurement */
-      if (strncmp(buffer, "GET /obtainmesurement", 21) == 0) {
+      if (strncmp(buffer, "GET /obtainmeasurement", 21) == 0) {
         
         // to obtain the latest info
         if(bluetooth_message) {
@@ -387,7 +387,7 @@ void loop()
         // if robot status is equal to 1 it means that it has correctly
         // received the message and it has changed its status
         if(robot.latest_status == 2) {
-          HTTP_response_obtainmesurement(client);      
+          HTTP_response_obtainmeasurement(client);      
         }
         else {
           HTTP_response_500(client);

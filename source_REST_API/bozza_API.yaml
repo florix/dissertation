@@ -67,12 +67,12 @@ paths:
 
   
   
-  /obtainmesurement:
+  /obtainmeasurement:
     get:
       description: |
-        This request is used to obtain enviromental mesurements in a specific place.
+        This request is used to obtain enviromental measurements in a specific place.
       summary: |
-        Using  this API, it is possibile to send the place where the robot has to perform the mesurements and how long it has to wait if it faces some obstacles.
+        Using  this API, it is possibile to send the place where the robot has to perform the measurements and how long it has to wait if it faces some obstacles.
       parameters:
         - name: path
           description: This is the path that the robot has to follow, it is an integer (possible values are 1 or 2).
