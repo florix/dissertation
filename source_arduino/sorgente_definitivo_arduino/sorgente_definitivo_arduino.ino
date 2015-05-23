@@ -382,7 +382,7 @@ void loop()
         robot.decode_message();
         // if robot status is equal to 1 it means that it has correctly
         // received the message and it has changed its status
-        if(robot.latest_status == 1) {
+        if(robot.latest_status == 2) {
           HTTP_response_obtainmesurement(client);      
         }
         else {
