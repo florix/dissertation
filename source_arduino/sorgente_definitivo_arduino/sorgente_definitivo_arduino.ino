@@ -375,7 +375,9 @@ void loop()
         
         // to obtain the latest info
         if(bluetooth_message) {
+          noInterrupts();
           robot.decode_message();
+          interrupts();
         }
 
         robot.send_message(1, 1);
@@ -394,7 +396,9 @@ void loop()
       else if (strncmp(buffer, "GET /obtainstatus", 17) == 0) {
         
         if(bluetooth_message) {
+          noInterrupts();
           robot.decode_message();
+          interrupts();
         }
         robot.send_message(0, 0);
         while (!bluetooth_message);
