@@ -313,6 +313,7 @@ int main()
 	rn42.attach(&isr_bluetooth);            // attach interrupt to serial port
 	myled = 0;								// turn off the led
 	bluetooth_setup();
+	number_of_asterisk = 0;
 
 	//infinite loop
 	while(1) {
@@ -327,6 +328,8 @@ int main()
 			case DECODE:
 				decode_message();
 				flags.flag_bluetooth_message = 0b0;		//clear the bit
+				i = 0;
+				number_of_asterisk = 0;					// reset for the next message
 				state = EXECUTION;
 				break;
 			case EXECUTION:
