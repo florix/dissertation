@@ -188,6 +188,8 @@ void send_reply()
 	else if (flags.flag_operation_code == 0b10) {
 		// the reply contains state and battery level
 		sprintf(sample, "%f", 34.45);		//conversion battery level
+
+		wait(0.1)
 		rn42.putc('*');
 		wait(0.1);
 		rn42.putc(' ');
@@ -270,18 +272,6 @@ void obtain_mesurement()
 	wait(0.1);
 	rn42.putc(' ');
 	wait(0.1);
-	rn42.putc('#');
-	wait(0.1);
-	rn42.putc('#');
-	wait(0.1);
-	rn42.putc('#');
-	wait(0.1);
-	rn42.putc('#');
-	wait(0.1);
-	rn42.putc('#');
-	wait(0.1);
-	rn42.putc(' ');
-	wait(0.1);
 	rn42.putc(float_converted[0]);
 	wait(0.1);
 	rn42.putc(float_converted[1]);
@@ -291,6 +281,18 @@ void obtain_mesurement()
 	rn42.putc(float_converted[3]);
 	wait(0.1);
 	rn42.putc(float_converted[4]);
+	wait(0.1);
+	rn42.putc(' ');
+	wait(0.1);
+	rn42.putc('#');
+	wait(0.1);
+	rn42.putc('#');
+	wait(0.1);
+	rn42.putc('#');
+	wait(0.1);
+	rn42.putc('#');
+	wait(0.1);
+	rn42.putc('#');
 	wait(0.1);
 	rn42.putc(' ');
 	wait(0.1);
