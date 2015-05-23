@@ -398,6 +398,7 @@ void loop()
         }
         robot.send_message(0, 0);
         while (!bluetooth_message);
+        robot.decode_message();
         HTTP_response_obtainstatus(client);
       }
       else if(strncmp(buffer, "GET /update", 11) == 0) {
