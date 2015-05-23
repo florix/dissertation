@@ -329,7 +329,9 @@ void loop()
        and in this case that it's arrived an unexpected message
        from the smartphone(latest_status update) */
     if(bluetooth_message) {
+      noInterrupts();
       robot.decode_message();
+      interrupts();
     }
     
     // listen for incoming clients
