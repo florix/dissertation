@@ -403,7 +403,12 @@ void loop()
         robot.send_message(0, 0);
         while (!bluetooth_message);
         robot.decode_message();
-        HTTP_response_obtainstatus(client);
+        if(robot.latest_status == 2) {
+          HTTP_response_obtainstatus(client);      
+        }
+        else {
+          HTTP_response_500(client);
+        }
       }
       else if(strncmp(buffer, "GET /update", 11) == 0) {
 
