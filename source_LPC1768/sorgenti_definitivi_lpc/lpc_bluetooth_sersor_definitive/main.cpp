@@ -189,7 +189,7 @@ void send_reply()
 		// the reply contains state and battery level
 		sprintf(sample, "%f", 34.45);		//conversion battery level
 
-		wait(0.1)
+		wait(0.1);
 		rn42.putc('*');
 		wait(0.1);
 		rn42.putc(' ');
