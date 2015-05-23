@@ -128,11 +128,11 @@ void m3pi::decode_message(void)
   value[3] = buffer1[7];
   value[4] = buffer1[8];
   value[5] = 0;
-  battery_level[0] = buffer1[9];
-  battery_level[1] = buffer1[10];
-  battery_level[2] = buffer1[11];
-  battery_level[3] = buffer1[12];
-  battery_level[4] = buffer1[13];
+  battery_level[0] = buffer1[10];
+  battery_level[1] = buffer1[11];
+  battery_level[2] = buffer1[12];
+  battery_level[3] = buffer1[13];
+  battery_level[4] = buffer1[14];
   battery_level[5] = 0;
   index = 0;
   bluetooth_message = false; 
