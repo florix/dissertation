@@ -1,62 +1,44 @@
-/* lpc line following */
+/*********************************************************************************/
+/* lpc_line_following definitive                                                 */
+/* this is the definitive source code for lpc that implements the line following */
+/* to stop the mp3i in a given point on the path, is used a timeout that expires */
+/* two times: the first one after 5 seconds, and the second one after another 5  */
+/* seconds, in that way the m3pi is able to return to the start                  */
+/*                    														     */
+/* PIN CONFIGURATION:                                                            */
+/* p8 = RST to 3pi                                                          	 */
+/* p9 = RXD to 3pi                                                         	     */
+/* p10 = TXD from 3pi                                                    	     */
+/*  Created on: May 24, 2015                                                  	 */
+/*      Author: Andrea Floridia                                               	 */
+/*********************************************************************************/
+
 
 #include "mbed.h"
 #include "m3pi.h"
 #include "cstdio"
 
-Serial pc(USBTX, USBRX);
-uint8_t abort_flag = 0;
-uint8_t timeout_measurement = 0;
-Timeout t;
-m3pi m3pi;
-DigitalOut myled(LED1);
 
-void isr_message(void) {
-    
-    if (pc.readable()) {
-        
-        char data = (char) pc.getc();
-        if(data == 'a')
-            abort_flag = 1;
-        
-        }
- }
- 
- 
- void isr_timeout(void) {
-    
-    timeout_measurement = 1;
-     
-    }
- 
-int main() {
-    
-    myled = 0;
-    t.attach(&isr_timeout, 3.0);
-    pc.attach(&isr_message);
-    // Parameters that affect the performance
-    float speed = 0.2;
-    float correction = 0.1;   
-    float threshold = 0.5;
- 
-    char sample[6];
-    char result[50];
-    
-    
- 
-    wait(2.0);
-    
-    sprintf(result, "%f", m3pi.battery());
-    sample[0] = result[0];
-    sample[1] = result[1];
-    sample[2] = result[2];
-    sample[3] = result[3];
-    sample[4] = 0;
+uint8_t 	timeout_expired = 0;		//it counts the number of timeout
+uint8_t 	timeout_measurement = 0;	//it's a flag, set whenever timeout occurs
+Timeout 	t;
+m3pi 		m3pi;
 
-    m3pi.locate(0,1);
-    m3pi.printf(sample);
-    
-    wait(2.0);
+ 
+ /* this is the isr called whenever interrupt from timer occurs */
+ void isr_timeout(void)
+{
+    timeout_measurement = 1;		//set the flag
+}
+ 
+
+
+int main()
+{
+    // local variables
+    const float 	speed = 0.2;
+    const float 	correction = 0.1;
+    const float 	threshold = 0.5;
  
     m3pi.locate(0,1);
     m3pi.printf("Line Flw");
@@ -64,25 +46,30 @@ int main() {
     wait(2.0);
     
     m3pi.sensor_auto_calibrate();
+    t.attach(&isr_timeout, 5.0);
     
     while (1) {
         
-        if(abort_flag) {
-            abort_flag = 0;
-            t.detach();
-            m3pi.stop();
-            goto end_routine;
-            }
             
         if(timeout_measurement) {
-            //obtain measurement
-            timeout_measurement = 0;
-            m3pi.stop();
-            wait(2.0);
-            myled = !myled;
-            t.detach();
-            t.attach(&isr_timeout, 3.0);
-            }
+
+        	if(timeout_expired) {
+        		t.detach();
+        		m3pi.stop();
+        		goto end_routine;				//jump to line 91 of this function
+        	}
+        	else {
+				//obtain measurement
+        		timeout_expired ++;
+				timeout_measurement = 0;		//reset flag
+				m3pi.stop();					//stop the 3pi
+				wait(2.0);						// to simulate obtain_measurement()
+				t.detach();						// reset the timer, must be reloaded
+				t.attach(&isr_timeout, 5.0);
+        	}
+        }
+
+        /* Line following algorithm */
             
         // -1.0 is far left, 1.0 is far right, 0.0 in the middle
         float position_of_line = m3pi.line_position();
@@ -104,6 +91,8 @@ int main() {
             m3pi.forward(speed);
         }
     }
+
     end_routine:
-    myled = 0;
+    	timeout_expired = 0;
+    	timeout_measurement = 0;
 }
