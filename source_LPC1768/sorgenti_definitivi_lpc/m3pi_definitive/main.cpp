@@ -233,7 +233,7 @@ void decode_message()
 /****************************************************/
 void send_reply()
 {
-	char	sample[10];
+	char	sample[30];
 
 	myled = 1;
 
@@ -275,7 +275,7 @@ void send_reply()
 	}
 	else if (flags.flag_operation_code == 0b10) {
 		// the reply contains state and battery level
-		sprintf(sample, "%f", 34.45);		//conversion battery level
+		sprintf(sample, "%f", m3pi.battery());		//conversion battery level
 
 		wait(0.1);
 		rn42.putc('*');
