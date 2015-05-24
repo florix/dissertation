@@ -309,6 +309,7 @@ int main()
 	myled = 0;								// turn off the led
 	bluetooth_setup();
 	number_of_asterisk = 0;
+	i = 0;
 
 	//infinite loop
 	while(1) {
