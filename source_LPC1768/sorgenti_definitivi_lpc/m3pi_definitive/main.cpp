@@ -10,7 +10,10 @@
 /* p10 = TXD from 3pi                                                    	     */
 /* p13 = RX RN-42 pin                  											 */
 /* p14 = TX RN-42 pin                 											 */
-/* p15 = central pin TMP36                   									 */
+/* p15 = central pin TMP36                                                       */
+/* p12 = right infrared sensor                                                   */
+/* p21 = left infrared sensor                                                    */
+/* p22 = central infrared sensor                   								 */
 /*  Created on: May 24, 2015                                                  	 */
 /*      Author: Andrea Floridia                                               	 */
 /*********************************************************************************/
@@ -21,7 +24,7 @@
 #include <cstdio>
 #include <cstring>
 
-/* States */
+/* FSM States */
 #define IDLE 0
 #define DECODE 1
 #define EXECUTION 2
@@ -42,7 +45,9 @@ uint8_t			i;						// index used to access buffer
 uint8_t			state;					// m3pi state
 Timeout 		t;						// this is the timer
 m3pi 			m3pi;					// this is the 3pi
-
+DigitalIn 		left_sensor(p21);		// left sensor used for obstacle avoidance
+DigitalIn 		central_sensor(p22);	// central sensor used for obstacle avoidance
+DigitalIn 		right_sensor(p12);		// right sensor used for obstacle avoidance
 
 
 /********************************************/
@@ -233,7 +238,7 @@ void decode_message()
 /****************************************************/
 void send_reply()
 {
-	char	sample[30];
+	char	sample[30];		// to store conversion result
 
 	myled = 1;
 
@@ -318,6 +323,30 @@ void send_reply()
 
 
 /*********************************************/
+/* Name: object_presence                     */
+/* Params: void                              */
+/* Return: uint8_t                           */
+/* This routine detects the presence of any  */
+/* object along the path 					 */
+/*********************************************/
+uint8_t object_presence(){
+
+    uint8_t  object = 0;
+
+    if(central_sensor.read() == 0)
+        object ++;
+
+    if(left_sensor.read() == 0)
+        object ++;
+
+    if(right_sensor.read() == 0)
+        object ++;
+
+    return object;
+}
+
+
+/*********************************************/
 /* Name: line_following                      */
 /* Params: void                              */
 /* Return: void                              */
@@ -333,22 +362,59 @@ void line_following(void)
     const float 	threshold = 0.5;
 
     m3pi.locate(0,1);
-    m3pi.printf("Line Flw");
+    m3pi.printf("Line Flw");		// print on LCD display
 
     wait(2.0);
 
     m3pi.sensor_auto_calibrate();
-    t.attach(&isr_timeout, 5.0);
+    t.attach(&isr_timeout, 5.0);		// attach isr for timeout
 
     while (1) {
 
+    	// check for obstacles along the path
+    	if (object_presence() > 0) {
 
+    		//an obstacle has been detected
+    		m3pi.right_motor(0.2);		// turn right
+    		m3pi.left_motor(0.1);
+    		wait(1);
+    		m3pi.left_motor(0.2);		// then turn left
+    		m3pi.right_motor(0.1);
+    		wait(1);
+    		m3pi.forward(0.1);			// forward
+    		wait(1);
+    	}
+    	else {
+    		/* Line following algorithm */
+
+    		// -1.0 is far left, 1.0 is far right, 0.0 in the middle
+    		float position_of_line = m3pi.line_position();
+
+    		// Line is more than the threshold to the right, slow the left motor
+    		if (position_of_line > threshold) {
+    			m3pi.right_motor(speed);
+    			m3pi.left_motor(speed-correction);
+    		}
+
+    		// Line is more than 50% to the left, slow the right motor
+    		else if (position_of_line < -threshold) {
+    			m3pi.left_motor(speed);
+    			m3pi.right_motor(speed-correction);
+    		}
+
+    		// Line is in the middle
+    		else {
+    			m3pi.forward(speed);
+    		}
+    	}
+
+    	// check if timeout has expired
         if(flags.flag_timeout_measurement) {
 
         	if(flags.flag_timeout_expired) {
         		t.detach();
         		m3pi.stop();
-        		goto end_routine;				//jump to line 155
+        		goto end_routine;				//jump out of the loop
         	}
         	else {
 				//obtain measurement
@@ -359,28 +425,6 @@ void line_following(void)
 				t.detach();									// reset the timer, must be reloaded
 				t.attach(&isr_timeout, 5.0);
         	}
-        }
-
-        /* Line following algorithm */
-
-        // -1.0 is far left, 1.0 is far right, 0.0 in the middle
-        float position_of_line = m3pi.line_position();
-
-        // Line is more than the threshold to the right, slow the left motor
-        if (position_of_line > threshold) {
-            m3pi.right_motor(speed);
-            m3pi.left_motor(speed-correction);
-        }
-
-        // Line is more than 50% to the left, slow the right motor
-        else if (position_of_line < -threshold) {
-            m3pi.left_motor(speed);
-            m3pi.right_motor(speed-correction);
-        }
-
-        // Line is in the middle
-        else {
-            m3pi.forward(speed);
         }
     }
 

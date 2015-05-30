@@ -1,17 +1,13 @@
+/* Obstacle avoidance
+ * Author: Andrea Floridia
+ * Date: 30/05/2015
+ *
+ * */
+
 #include "mbed.h"
 #include "m3pi.h"
 
-// Minimum and maximum motor speeds
-#define MAX 1.0
-#define MIN 0
- 
-// PID terms
-#define P_TERM 1
-#define I_TERM 0
-#define D_TERM 20
-
-
-
+/* global variables */
 DigitalIn left_sensor(p21);
 DigitalIn central_sensor(p22);
 DigitalIn right_sensor(p12);
@@ -21,8 +17,8 @@ Timeout t;
 DigitalOut myled(LED1);
 uint8_t    timeout_expired = 0;
 
-
 m3pi m3pi;
+
 
 void isr_timeout(void) {
     
@@ -30,6 +26,8 @@ void isr_timeout(void) {
      
     }
 
+
+/* this function detect objects presence */
 uint8_t object_presence(){
     
     uint8_t  object = 0;
@@ -48,7 +46,7 @@ uint8_t object_presence(){
  
 int main() {
     
-        myled = 0;
+    myled = 0;
 
     // Parameters that affect the performance
     float speed = 0.2;
@@ -80,25 +78,22 @@ int main() {
     
     m3pi.sensor_auto_calibrate();
     
-            t.attach(&isr_timeout, 5.0);
+    t.attach(&isr_timeout, 5.0);
 
     while (1) {
         
         
         
         if (object_presence() > 0) {
-            // turn right, an obstacle has been detected!
-            m3pi.right_motor(0.2);
+
+            m3pi.right_motor(0.2);		// turn right, an obstacle has been detected!
             m3pi.left_motor(0.1);
             wait(1);        
-            m3pi.left_motor(0.2);
+            m3pi.left_motor(0.2);		// then turn left
             m3pi.right_motor(0.1);
             wait(1);
-            m3pi.forward(0.1);
+            m3pi.forward(0.1);			// forward
             wait(1);
-            
-            //while(object_presence() > 0) {};     // turn until no object detected...
-            
         } 
         else {
             // no obstacle, line following
@@ -147,7 +142,7 @@ int main() {
     }
     
     end_routine:
-    myled = 0;
-    timeout_expired = 0;
-    timeout_measurement = 0;
+		myled = 0;
+		timeout_expired = 0;
+		timeout_measurement = 0;
 }
