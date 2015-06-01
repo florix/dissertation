@@ -26,10 +26,10 @@
 
 /* ETHERNET GLOBAL VARIABLES  */
 byte              mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xFA, 0x0F };    // Arduino MAC adress
-char              buffer[50];		                                     // buffer used to store the first line of the request	
-uint8_t           NumberOfSpace = 0;			                           // Number of space in the request
-uint8_t           i = 0;						                                 // index for the string buffer
-EthernetServer    server(80);		                                     // server initialization
+char              buffer[50];                                        // buffer used to store the first line of the request  
+uint8_t           NumberOfSpace = 0;                                 // Number of space in the request
+uint8_t           i = 0;                                             // index for the string buffer
+EthernetServer    server(80);                                        // server initialization
 
 
 /* BLUETOOTH GLOBAL VARIABLES */
@@ -270,10 +270,10 @@ void HTTP_BAD_REQUEST(EthernetClient  & client)
 
 
 /***************************************/
-/*	Name: Setup                        */
-/*	Params: Void                       */
-/*	Return: Void                       */
-/*	Description: This is the setup     */
+/*  Name: Setup                        */
+/*  Params: Void                       */
+/*  Return: Void                       */
+/*  Description: This is the setup     */
 /***************************************/
 void setup()
 {
